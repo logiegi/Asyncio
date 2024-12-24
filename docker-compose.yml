@@ -1,0 +1,47 @@
+version: '3.13'
+
+volumes:
+  pgdata:
+
+networks:
+  swapi_backend:
+
+services:
+
+  swapi_pg_db:
+    image: postgres:14.3-alpine3.16
+    container_name: swapi_pg_db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - '5432:5432'
+    networks:
+      - swapi_backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1G
+
+  swapi_pgadmin:
+    image: dpage/pgadmin4:latest
+    ports:
+      - "5080:80"
+    container_name: swapi_pgadmin
+    depends_on:
+      - swapi_pg_db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "aaa@yandex.ru"
+      PGADMIN_DEFAULT_PASSWORD: "111"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./services/pgadmin:/var/lib/pgadmin
+    networks:
+      - swapi_backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1G
